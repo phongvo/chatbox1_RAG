@@ -1,0 +1,294 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const AutoSwaggerConfig = require('./config/swaggerAuto');
+const { 
+  swaggerUi, 
+  swaggerDocument, 
+  swaggerOptions, 
+  swaggerMiddleware,
+  environment,
+  isEnabled,
+  routeGenerator,
+  regenerateRoutes,
+  cleanGeneratedRoutes
+} = require('./config/swagger');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Initialize auto swagger
+const autoSwagger = new AutoSwaggerConfig();
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
+// MongoDB connection with proper error handling
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/chatbox_rag';
+
+async function connectToMongoDB() {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+    });
+    
+    console.log('✅ MongoDB connected successfully');
+    console.log(`📊 Database: ${mongoose.connection.name}`);
+    return true;
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:');
+    console.error('Error details:', error.message);
+    
+    // Check specific error types
+    if (error.name === 'MongoServerSelectionError') {
+      console.error('💡 Possible solutions:');
+      console.error('   1. Make sure MongoDB is running: brew services start mongodb-community');
+      console.error('   2. Check if MongoDB is installed: brew install mongodb-community');
+      console.error('   3. Verify connection string in .env file');
+      console.error('   4. Check if port 27017 is available');
+    }
+    
+    return false;
+  }
+}
+
+// MongoDB connection event handlers
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB reconnected');
+});
+
+// Initialize auto-generated documentation
+async function initializeSwagger() {
+  try {
+    await autoSwagger.generateDocumentation({
+      title: 'Chatbox RAG API',
+      description: 'Auto-generated comprehensive API documentation'
+    });
+    
+    const { serve, setup } = autoSwagger.getSwaggerMiddleware();
+    app.use('/api-docs', serve, setup);
+    
+    console.log('Auto-generated Swagger documentation initialized');
+  } catch (error) {
+    console.error('Failed to initialize Swagger documentation:', error);
+  }
+}
+
+// Routes
+// Mount existing routes
+app.use('/api', require('./routes'));
+
+// Mount generated routes if they exist
+try {
+  const generatedRoutes = require('./routes/generated');
+  app.use('/api/generated', generatedRoutes);
+  console.log('📁 Generated routes mounted at /api/generated');
+} catch (error) {
+  console.log('📁 No generated routes found');
+}
+
+// Environment-aware Swagger documentation
+if (isEnabled) {
+  app.use('/api-docs', 
+    swaggerMiddleware,
+    swaggerUi.serve, 
+    swaggerUi.setup(swaggerDocument, swaggerOptions)
+  );
+  
+  // Route generation endpoints (development only)
+  if (environment === 'local') {
+    app.post('/api/regenerate-routes', async (req, res) => {
+      try {
+        const result = await regenerateRoutes();
+        res.json({
+          message: 'Routes regenerated successfully',
+          generated: Object.keys(result || {}),
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    app.delete('/api/clean-routes', async (req, res) => {
+      try {
+        await cleanGeneratedRoutes();
+        res.json({
+          message: 'Generated routes cleaned successfully',
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+  }
+  
+  console.log(`📖 Swagger UI available at: http://localhost:${PORT}/api-docs`);
+} else {
+  console.log(`🚫 Swagger UI disabled in ${environment} environment`);
+}
+
+// Additional endpoint to get API info
+app.get('/api-info', (req, res) => {
+  res.json({
+    environment: environment,
+    documentation: isEnabled ? '/api-docs' : 'disabled',
+    version: swaggerDocument.info.version,
+    servers: swaggerDocument.servers,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Chatbox RAG Server is running!',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    api: '/api',
+    documentation: '/api-docs',
+    autoGenerated: true
+  });
+});
+
+// Development route to regenerate docs
+if (process.env.NODE_ENV === 'development') {
+  app.get('/regenerate-docs', async (req, res) => {
+    try {
+      await autoSwagger.regenerate();
+      res.json({ message: 'Documentation regenerated successfully' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to regenerate documentation' });
+    }
+  });
+}
+
+// Global error handling middleware
+app.use((error, req, res, next) => {
+  console.error('Global Error:', error);
+  res.status(500).json({
+    error: 'Internal server error',
+    message: 'Something went wrong'
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    message: `The route ${req.originalUrl} does not exist`,
+    availableRoutes: {
+      root: '/',
+      api: '/api',
+      documentation: '/api-docs'
+    }
+  });
+});
+
+// Start server and initialize swagger
+// Modified startServer function
+async function startServer() {
+  try {
+    // First, try to connect to MongoDB
+    const mongoConnected = await connectToMongoDB();
+    
+    if (!mongoConnected) {
+      console.error('🚫 Server startup aborted: MongoDB connection failed');
+      console.error('🔧 Please fix MongoDB connection and try again');
+      process.exit(1); // Exit with error code
+    }
+    
+    // Only proceed if MongoDB is connected
+    await initializeSwagger();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`🌐 API available at http://localhost:${PORT}/api`);
+      console.log(`📚 API Documentation available at http://localhost:${PORT}/api-docs`);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔄 Regenerate docs at http://localhost:${PORT}/regenerate-docs`);
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+}
+
+// Environment-aware Swagger documentation
+if (isEnabled) {
+  app.use('/api-docs', 
+    swaggerMiddleware,
+    swaggerUi.serve, 
+    swaggerUi.setup(swaggerDocument, swaggerOptions)
+  );
+  
+  // Additional endpoint to get API info
+  app.get('/api-info', (req, res) => {
+    res.json({
+      environment: environment,
+      documentation: isEnabled ? '/api-docs' : 'disabled',
+      version: swaggerDocument.info.version,
+      servers: swaggerDocument.servers,
+      timestamp: new Date().toISOString()
+    });
+  });
+  
+  console.log(`📖 Swagger UI available at: http://localhost:${PORT}/api-docs`);
+} else {
+  console.log(`🚫 Swagger UI disabled in ${environment} environment`);
+  
+  // Provide a disabled endpoint
+  app.get('/api-docs', (req, res) => {
+    res.status(404).json({
+      error: 'API documentation is disabled in this environment',
+      environment: environment
+    });
+  });
+}
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed');
+    process.exit(0);
+  });
+});
+
+startServer().catch(console.error);
+
+// Remove these duplicate lines (lines 293-296):
+// app.use('/api', routes);  // <- DELETE THIS LINE
+// app.use(errorHandler);    // <- DELETE THIS LINE

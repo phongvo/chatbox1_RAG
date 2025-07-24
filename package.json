@@ -1,0 +1,23 @@
+{
+  "name": "chatbox-rag",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"yarn start:server\" \"yarn start:client\"",
+    "start:server": "cd server && yarn start",
+    "start:client": "cd client && yarn start",
+    "dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
+    "dev:server": "cd server && yarn dev",
+    "dev:client": "cd client && yarn dev",
+    "test": "cd server && yarn test",
+    "test:watch": "cd server && yarn test:watch",
+    "test:coverage": "cd server && yarn test:coverage",
+    "install:all": "yarn install && cd server && yarn install && cd ../client && yarn install",
+    "build": "cd client && yarn build",
+    "clean": "rm -rf node_modules && cd server && rm -rf node_modules && cd ../client && rm -rf node_modules"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
