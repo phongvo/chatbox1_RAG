@@ -63,7 +63,7 @@ function ChatSection({ currentUser }) {
       // Send to LMStudio chat API
       const chatData = {
         message: content,
-        model: 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+        // Remove hardcoded model - let server use environment variable
         temperature: 0.7,
         maxTokens: 1500,
         useRAG: true // Enable RAG for better responses

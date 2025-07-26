@@ -25,7 +25,7 @@ class ChatController {
         // Use RAG with embeddings
         const ragResponse = await this.embeddingService.generateRAGResponse(message, {
           temperature: temperature || 0.7,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           maxTokens: maxTokens || 1500
         });
         
@@ -50,13 +50,13 @@ class ChatController {
         
         const chatResponse = await this.llStudioService.generateChatCompletion(messages, {
           temperature: temperature || 0.7,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           maxTokens: maxTokens || 1500
         });
         
         response = {
           response: chatResponse,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           useRAG: false
         };
       }
@@ -99,7 +99,7 @@ class ChatController {
         // Use RAG with streaming
         const stream = await this.embeddingService.generateStreamingRAGResponse(message, {
           temperature: temperature || 0.7,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           maxTokens: maxTokens || 1500
         });
         
@@ -134,7 +134,7 @@ class ChatController {
         
         const stream = await this.llStudioService.generateStreamingChatCompletion(messages, {
           temperature: temperature || 0.7,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           maxTokens: maxTokens || 1500
         });
         
@@ -192,7 +192,7 @@ class ChatController {
         
         const ragResponse = await this.embeddingService.generateRAGResponse(lastUserMessage.content, {
           temperature: temperature || 0.7,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           maxTokens: maxTokens || 1500
         });
         
@@ -210,13 +210,13 @@ class ChatController {
         // Multi-turn conversation without RAG
         const chatResponse = await this.llStudioService.generateChatCompletion(messages, {
           temperature: temperature || 0.7,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           maxTokens: maxTokens || 1500
         });
         
         response = {
           response: chatResponse,
-          model: model || 'mistralai/Mistral-7B-Instruct-v0.3-GGUF',
+          model: model || this.llStudioService.chatModel,
           useRAG: false
         };
       }
