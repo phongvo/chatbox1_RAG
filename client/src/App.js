@@ -1,90 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import ChatBox from './components/ChatBox';
-import MessageList from './components/MessageList';
-import UserList from './components/UserList';
-import { getMessages, sendMessage, getUsers } from './services/api';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import { getCurrentUser } from './services/api';
 
 function App() {
-  const [messages, setMessages] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState('User');
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    fetchMessages();
-    fetchUsers();
+    checkAuthStatus();
   }, []);
 
-  const fetchMessages = async () => {
-    try {
-      const response = await getMessages();
-      setMessages(response.data);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-    } finally {
-      setLoading(false);
+  const checkAuthStatus = async () => {
+    const token = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('user');
+    
+    if (token && savedUser) {
+      try {
+        // Verify token is still valid
+        const response = await getCurrentUser();
+        setCurrentUser(response.data.user);
+        setIsAuthenticated(true);
+      } catch (error) {
+        // Token is invalid, clear storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+      }
     }
+    setLoading(false);
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response = await getUsers();
-      setUsers(response.data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
   };
 
-  const handleSendMessage = async (content) => {
-    try {
-      const messageData = {
-        content,
-        sender: currentUser,
-        messageType: 'user'
-      };
-      
-      const response = await sendMessage(messageData);
-      setMessages(prev => [response.data, ...prev]);
-      
-      // Simulate bot response
-      setTimeout(async () => {
-        const botResponse = {
-          content: `Bot response to: ${content}`,
-          sender: 'Bot',
-          messageType: 'bot'
-        };
-        
-        const botMessage = await sendMessage(botResponse);
-        setMessages(prev => [botMessage.data, ...prev]);
-      }, 1000);
-      
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-xl text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Chatbox RAG</h1>
-      </header>
-      
-      <div className="app-container">
-        <div className="sidebar">
-          <UserList users={users} currentUser={currentUser} setCurrentUser={setCurrentUser} />
-        </div>
-        
-        <div className="main-content">
-          <MessageList messages={messages} />
-          <ChatBox onSendMessage={handleSendMessage} />
-        </div>
-      </div>
-    </div>
+    <Dashboard 
+      currentUser={currentUser} 
+      onLogout={handleLogout}
+    />
   );
 }
 

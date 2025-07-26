@@ -1,0 +1,42 @@
+{
+  "document": {
+    "filename": "ai-research-paper.pdf",
+    "content_chunks": [
+      {
+        "chunk_id": 1,
+        "content": "Introduction: Artificial Intelligence has transformed numerous industries through its ability to process and analyze vast amounts of data.",
+        "metadata": {
+          "section": "Introduction",
+          "page": 1,
+          "word_count": 18,
+          "position": "start"
+        }
+      },
+      {
+        "chunk_id": 2,
+        "content": "Machine learning algorithms, particularly deep neural networks, have shown remarkable success in pattern recognition and predictive modeling tasks.",
+        "metadata": {
+          "section": "Background",
+          "page": 2,
+          "word_count": 19,
+          "position": "middle"
+        }
+      }
+    ],
+    "global_metadata": {
+      "title": "AI in Modern Applications",
+      "authors": ["Dr. Alice Brown"],
+      "publication_date": "2024-01-10",
+      "total_pages": 15,
+      "total_chunks": 25,
+      "language": "en",
+      "field": "Computer Science"
+    }
+  },
+  "processing_options": {
+    "chunk_size": 300,
+    "overlap": 50,
+    "embedding_model": "nomic-ai/nomic-embed-text-v1.5-GGUF",
+    "similarity_threshold": 0.6
+  }
+}

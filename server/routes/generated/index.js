@@ -1,5 +1,5 @@
 // Auto-generated routes index
-// Generated on: 2025-07-24T15:59:20.353Z
+// Generated on: 2025-07-24T16:51:09.907Z
 
 const express = require('express');
 const router = express.Router();
@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
       messages: '/api/generated/messages',
       users: '/api/generated/users'
     },
-    generatedAt: '2025-07-24T15:59:20.353Z'
+    generatedAt: '2025-07-24T16:51:09.907Z'
   });
 });
 

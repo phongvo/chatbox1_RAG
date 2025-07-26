@@ -1,0 +1,12 @@
+{
+  "query": "How to optimize Mistral model performance for RAG applications?",
+  "options": {
+    "limit": 5,
+    "threshold": 0.7,
+    "source": "document",
+    "metadata": {
+      "category": "technical_documentation",
+      "tags": ["Mistral", "optimization"]
+    }
+  }
+}

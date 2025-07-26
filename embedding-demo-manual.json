@@ -1,0 +1,14 @@
+{
+  "content": "To configure LMStudio for optimal performance with Mistral models: 1) Set temperature between 0.7-0.9 for creative tasks, 2) Use max_tokens of 1500-2000 for detailed responses, 3) Enable RAG with similarity threshold of 0.6-0.8, 4) Configure stop tokens: ['</s>', '[INST]', '[/INST]']",
+  "metadata": {
+    "entry_type": "configuration_guide",
+    "category": "technical_documentation",
+    "subcategory": "model_configuration",
+    "difficulty_level": "intermediate",
+    "tags": ["LMStudio", "Mistral", "configuration", "optimization"],
+    "last_updated": "2024-01-20T14:22:00Z",
+    "version": "1.2",
+    "author": "technical_team"
+  },
+  "source": "manual"
+}

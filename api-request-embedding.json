@@ -1,0 +1,17 @@
+{
+  "method": "POST",
+  "endpoint": "/chat/embeddings",
+  "body": {
+    "content": "Retrieval-Augmented Generation (RAG) combines the power of large language models with external knowledge retrieval. It works by first retrieving relevant documents from a knowledge base, then using those documents as context for generating responses.",
+    "options": {
+      "model": "nomic-ai/nomic-embed-text-v1.5-GGUF",
+      "metadata": {
+        "filename": "rag-explanation.txt",
+        "category": "AI_concepts",
+        "tags": ["RAG", "retrieval", "generation", "LLM"]
+      },
+      "source": "document",
+      "sourceModel": "Document"
+    }
+  }
+}

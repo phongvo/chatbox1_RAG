@@ -17,7 +17,7 @@ class AutoSwaggerConfig {
       description: 'Automatically generated API documentation from route analysis',
       servers: [
         {
-          url: 'http://localhost:5000',
+          url: 'http://localhost:5050',
           description: 'Development server'
         },
         {

@@ -628,23 +628,7 @@ module.exports = {
         required: true,
         content: {
           'application/json': {
-            schema: {
-              type: 'object',
-              required: ['currentPassword', 'newPassword'],
-              properties: {
-                currentPassword: {
-                  type: 'string',
-                  description: 'Current password',
-                  example: 'oldpassword123'
-                },
-                newPassword: {
-                  type: 'string',
-                  minLength: 6,
-                  description: 'New password',
-                  example: 'newpassword123'
-                }
-              }
-            }
+            schema: { $ref: '#/components/schemas/ChangePasswordRequest' }
           }
         }
       },
@@ -658,7 +642,7 @@ module.exports = {
           }
         },
         400: {
-          description: 'Invalid current password',
+          description: 'Invalid current password or validation error',
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/Error' }

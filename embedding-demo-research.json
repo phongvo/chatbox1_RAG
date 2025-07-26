@@ -1,0 +1,18 @@
+{
+  "content": "Abstract: This paper presents a novel approach to transformer architecture optimization for natural language understanding tasks. We introduce a new attention mechanism that reduces computational complexity while maintaining performance across multiple benchmarks. Our experiments show a 15% improvement in efficiency with comparable accuracy to state-of-the-art models.",
+  "metadata": {
+    "filename": "transformer-optimization-2024.pdf",
+    "title": "Efficient Transformer Architecture for NLU Tasks",
+    "authors": ["Dr. Jane Smith", "Prof. Mike Johnson"],
+    "journal": "Journal of AI Research",
+    "publication_year": 2024,
+    "doi": "10.1000/xyz123",
+    "keywords": ["transformer", "attention mechanism", "NLU", "optimization"],
+    "section_type": "abstract",
+    "page_range": "1-1",
+    "citation_count": 45,
+    "field_of_study": "Computer Science"
+  },
+  "source": "document",
+  "sourceModel": "Document"
+}

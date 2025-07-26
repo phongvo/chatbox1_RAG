@@ -1,0 +1,15 @@
+{
+  "content": "User asked about implementing RAG with Mistral models. The conversation covered document preprocessing, chunking strategies, embedding generation, and similarity search optimization for better retrieval accuracy.",
+  "metadata": {
+    "conversation_id": "conv_123456",
+    "message_ids": ["msg_001", "msg_002", "msg_003"],
+    "participants": ["user_john", "assistant_ai"],
+    "topic": "RAG implementation",
+    "tags": ["RAG", "Mistral", "embeddings", "technical support"],
+    "session_duration": "00:15:30",
+    "message_count": 8
+  },
+  "source": "message",
+  "sourceModel": "Message",
+  "sourceId": "conv_123456"
+}

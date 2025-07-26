@@ -1,0 +1,42 @@
+{
+  "documents": [
+    {
+      "content": "Natural Language Processing (NLP) is a branch of artificial intelligence that helps computers understand, interpret and manipulate human language. NLP draws from many disciplines, including computer science and computational linguistics.",
+      "metadata": {
+        "filename": "nlp-guide.pdf",
+        "title": "NLP Fundamentals",
+        "category": "technology",
+        "tags": ["NLP", "natural language processing", "AI"],
+        "chunk_id": 1,
+        "total_chunks": 5
+      }
+    },
+    {
+      "content": "Deep learning is a subset of machine learning that uses neural networks with multiple layers to model and understand complex patterns in data. It has revolutionized fields like computer vision and speech recognition.",
+      "metadata": {
+        "filename": "deep-learning.pdf",
+        "title": "Deep Learning Concepts",
+        "category": "technology",
+        "tags": ["deep learning", "neural networks", "AI"],
+        "chunk_id": 1,
+        "total_chunks": 3
+      }
+    },
+    {
+      "content": "Computer vision is a field of artificial intelligence that trains computers to interpret and understand the visual world. Using digital images from cameras and videos, machines can accurately identify and classify objects.",
+      "metadata": {
+        "filename": "computer-vision.pdf",
+        "title": "Computer Vision Overview",
+        "category": "technology",
+        "tags": ["computer vision", "image processing", "AI"],
+        "chunk_id": 1,
+        "total_chunks": 4
+      }
+    }
+  ],
+  "options": {
+    "model": "nomic-ai/nomic-embed-text-v1.5-GGUF",
+    "source": "document",
+    "batch_size": 10
+  }
+}

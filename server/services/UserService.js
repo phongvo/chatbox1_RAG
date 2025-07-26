@@ -31,12 +31,12 @@ class UserService extends BaseService {
     if (existingUser) {
       throw new ConflictError('User already exists with this email or username');
     }
-
-    // Hash password if provided
-    if (userData.password) {
-      userData.password = await bcrypt.hash(userData.password, 12);
-    }
-
+  
+    // Remove manual hashing - let the model's pre-save hook handle it
+    // if (userData.password) {
+    //   userData.password = await bcrypt.hash(userData.password, 12);
+    // }
+  
     const user = await this.create(userData);
     
     // Return user without sensitive data
@@ -70,22 +70,22 @@ class UserService extends BaseService {
     if (!user) {
       throw new NotFoundError('User not found');
     }
-
+  
     // Check authorization (self or admin)
     if (requestingUser.role !== 'admin' && requestingUser._id.toString() !== id) {
       throw new ForbiddenError('You can only update your own profile');
     }
-
+  
     // Only admin can change roles
     if (updateData.role && requestingUser.role !== 'admin') {
       delete updateData.role;
     }
-
-    // Hash password if being updated
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 12);
-    }
-
+  
+    // Remove manual hashing - let the model's pre-save hook handle it
+    // if (updateData.password) {
+    //   updateData.password = await bcrypt.hash(updateData.password, 12);
+    // }
+  
     const updatedUser = await this.updateById(id, updateData);
     
     // Return without sensitive data

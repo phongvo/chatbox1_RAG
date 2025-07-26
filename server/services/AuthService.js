@@ -48,8 +48,9 @@ class AuthService {
   // Login user
   async login(email, password) {
     // Find user by email
+    console.log('Login attempt for email:', email);
     const user = await this.userService.findByEmail(email);
-    
+    console.log('User found:', user);
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');
     }
@@ -60,7 +61,7 @@ class AuthService {
     
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+    console.log('Password valid:', isPasswordValid);
     if (!isPasswordValid) {
       throw new UnauthorizedError('Invalid credentials');
     }

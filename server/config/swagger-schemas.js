@@ -66,21 +66,65 @@ module.exports = {
     type: 'object',
     required: ['username', 'email', 'password'],
     properties: {
-      username: { $ref: '#/components/schemas/User/properties/username' },
-      email: { $ref: '#/components/schemas/User/properties/email' },
-      password: { $ref: '#/components/schemas/User/properties/password' },
-      role: { $ref: '#/components/schemas/User/properties/role' },
-      avatar: { $ref: '#/components/schemas/User/properties/avatar' }
+      username: {
+        type: 'string',
+        minLength: 3,
+        maxLength: 30,
+        description: 'Unique username',
+        example: 'johndoe'
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        description: 'User email address',
+        example: 'john@example.com'
+      },
+      password: {
+        type: 'string',
+        minLength: 6,
+        description: 'User password',
+        example: 'password123'
+      },
+      role: {
+        type: 'string',
+        enum: ['user', 'admin'],
+        default: 'user',
+        description: 'User role'
+      },
+      avatar: {
+        type: 'string',
+        description: 'User avatar URL',
+        example: 'https://example.com/avatar.jpg'
+      }
     }
   },
 
   UserUpdate: {
     type: 'object',
     properties: {
-      username: { $ref: '#/components/schemas/User/properties/username' },
-      email: { $ref: '#/components/schemas/User/properties/email' },
-      avatar: { $ref: '#/components/schemas/User/properties/avatar' },
-      role: { $ref: '#/components/schemas/User/properties/role' }
+      username: {
+        type: 'string',
+        minLength: 3,
+        maxLength: 30,
+        description: 'Unique username',
+        example: 'johndoe'
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        description: 'User email address',
+        example: 'john@example.com'
+      },
+      avatar: {
+        type: 'string',
+        description: 'User avatar URL',
+        example: 'https://example.com/avatar.jpg'
+      },
+      role: {
+        type: 'string',
+        enum: ['user', 'admin'],
+        description: 'User role'
+      }
     }
   },
 
@@ -117,7 +161,8 @@ module.exports = {
       },
       metadata: {
         type: 'object',
-        description: 'Additional message metadata'
+        description: 'Additional message metadata',
+        additionalProperties: true
       },
       createdAt: {
         type: 'string',
@@ -136,10 +181,27 @@ module.exports = {
     type: 'object',
     required: ['content', 'sender'],
     properties: {
-      content: { $ref: '#/components/schemas/Message/properties/content' },
-      sender: { $ref: '#/components/schemas/Message/properties/sender' },
-      messageType: { $ref: '#/components/schemas/Message/properties/messageType' },
-      metadata: { $ref: '#/components/schemas/Message/properties/metadata' }
+      content: {
+        type: 'string',
+        description: 'Message content',
+        example: 'Hello, how are you?'
+      },
+      sender: {
+        type: 'string',
+        description: 'Message sender name',
+        example: 'John Doe'
+      },
+      messageType: {
+        type: 'string',
+        enum: ['user', 'bot'],
+        default: 'user',
+        description: 'Type of message'
+      },
+      metadata: {
+        type: 'object',
+        description: 'Additional message metadata',
+        additionalProperties: true
+      }
     }
   },
 
@@ -171,14 +233,34 @@ module.exports = {
       },
       accessToken: {
         type: 'string',
-        description: 'JWT access token'
+        description: 'JWT access token',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
       },
       refreshToken: {
         type: 'string',
-        description: 'JWT refresh token'
+        description: 'JWT refresh token',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
       },
       user: {
-        $ref: '#/components/schemas/User'
+        type: 'object',
+        properties: {
+          _id: {
+            type: 'string',
+            example: '507f1f77bcf86cd799439011'
+          },
+          username: {
+            type: 'string',
+            example: 'johndoe'
+          },
+          email: {
+            type: 'string',
+            example: 'john@example.com'
+          },
+          role: {
+            type: 'string',
+            example: 'user'
+          }
+        }
       }
     }
   },
@@ -189,7 +271,26 @@ module.exports = {
     properties: {
       refreshToken: {
         type: 'string',
-        description: 'JWT refresh token'
+        description: 'JWT refresh token',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+      }
+    }
+  },
+
+  ChangePasswordRequest: {
+    type: 'object',
+    required: ['currentPassword', 'newPassword'],
+    properties: {
+      currentPassword: {
+        type: 'string',
+        description: 'Current password',
+        example: 'oldpassword123'
+      },
+      newPassword: {
+        type: 'string',
+        minLength: 6,
+        description: 'New password (minimum 6 characters)',
+        example: 'newpassword123'
       }
     }
   },
@@ -197,75 +298,102 @@ module.exports = {
   // Common schemas
   Error: {
     type: 'object',
+    required: ['error'],
     properties: {
       error: {
         type: 'string',
-        description: 'Error message'
+        description: 'Error message',
+        example: 'Something went wrong'
       },
       message: {
         type: 'string',
-        description: 'Detailed error description'
+        description: 'Detailed error description',
+        example: 'The requested resource was not found'
+      },
+      code: {
+        type: 'string',
+        description: 'Error code',
+        example: 'RESOURCE_NOT_FOUND'
       }
     }
   },
 
   SuccessMessage: {
     type: 'object',
+    required: ['message'],
     properties: {
       message: {
         type: 'string',
-        description: 'Success message'
+        description: 'Success message',
+        example: 'Operation completed successfully'
+      },
+      timestamp: {
+        type: 'string',
+        format: 'date-time',
+        description: 'Timestamp of the operation'
       }
     }
   },
-
-  // Add to the end of the existing schemas
-
-    ChangePasswordRequest: {
-      type: 'object',
-      required: ['currentPassword', 'newPassword'],
-      properties: {
-        currentPassword: {
-          type: 'string',
-          description: 'Current password'
-        },
-        newPassword: {
-          type: 'string',
-          minLength: 6,
-          description: 'New password'
-        }
-      }
-    },
   
-    UserStats: {
-      type: 'object',
-      properties: {
-        totalUsers: { type: 'number' },
-        activeUsers: { type: 'number' },
-        inactiveUsers: { type: 'number' },
-        adminUsers: { type: 'number' },
-        recentRegistrations: { type: 'number' }
-      }
-    },
-  
-    MessageStats: {
-      type: 'object',
-      properties: {
-        totalMessages: { type: 'number' },
-        userMessages: { type: 'number' },
-        botMessages: { type: 'number' },
-        averageMessageLength: { type: 'number' },
-        messagesPerDay: { type: 'number' },
-        topSenders: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              sender: { type: 'string' },
-              count: { type: 'number' }
-            }
-          }
-        }
+  UserStats: {
+    type: 'object',
+    properties: {
+      totalUsers: {
+        type: 'number',
+        description: 'Total number of users',
+        example: 150
+      },
+      activeUsers: {
+        type: 'number',
+        description: 'Number of active users',
+        example: 120
+      },
+      inactiveUsers: {
+        type: 'number',
+        description: 'Number of inactive users',
+        example: 30
+      },
+      adminUsers: {
+        type: 'number',
+        description: 'Number of admin users',
+        example: 5
+      },
+      recentRegistrations: {
+        type: 'number',
+        description: 'Users registered in last 30 days',
+        example: 25
       }
     }
+  },
+  
+  MessageStats: {
+    type: 'object',
+    properties: {
+      totalMessages: {
+        type: 'number',
+        description: 'Total number of messages',
+        example: 1500
+      },
+      userMessages: {
+        type: 'number',
+        description: 'Number of user messages',
+        example: 800
+      },
+      botMessages: {
+        type: 'number',
+        description: 'Number of bot messages',
+        example: 700
+      },
+      todayMessages: {
+        type: 'number',
+        description: 'Messages sent today',
+        example: 45
+      },
+      averageLength: {
+        type: 'number',
+        description: 'Average message length',
+        example: 125.5
+      }
+    }
+  }
 };
